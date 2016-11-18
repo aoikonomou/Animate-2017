@@ -5,12 +5,15 @@
 	import flash.events.Event;
 	import flash.media.Sound;
 	import flash.media.SoundChannel;
+	import model;
 
 	public class HCIPlayground extends MovieClip {
 
-		// Main function and initial Scene
+		var modelInst = new model(); // The model class that holds the game's data is instantiated
+		// Main function
 
 		public function HCIPlayground() {
+
 
 			startButton.addEventListener(MouseEvent.CLICK, navigateToMainScene);
 			stage.addEventListener(MouseEvent.MOUSE_UP, fl_ReleaseToDrop);
@@ -29,6 +32,7 @@
 			stage.addEventListener(Event.ENTER_FRAME, fl_EnterFrameHandler);
 
 			finishButtonInst.addEventListener(MouseEvent.CLICK, navigateToEndScene);
+
 
 		}
 
@@ -50,31 +54,57 @@
 
 			if (eggInst.hitTestObject(fryingPanInst) == true) {
 
-				trace("Omellete on its way...");
+				if (modelInst.ommelleteMsgTracker < 1) {
+					trace("Omellete on its way...");
+					modelInst.ommelleteMsgTracker = 1;
+				}
 
-				// Prepare the system to play sounds when the right events happen
-				var soundChannel1: SoundChannel = new SoundChannel(); // You need a sound channel variable. Create it like this
-				var tadaInst: Sound = new tada();
+				if (modelInst.soundPlayingEgg == 0) {
+					modelInst.tadaInst.play();
 
-				tadaInst.play();
+					modelInst.soundPlayingEgg = 1;
+				}
+
+			
+			} else {
+
+				modelInst.ommelleteMsgTracker = 0;
+				modelInst.soundPlayingEgg = 0;
 
 			}
 
 			if (hamsterInst.hitTestObject(fryingPanInst) == true) {
 
-				trace("Bacon on its way...");
+				if (modelInst.baconMsgTracker < 1) {
+					trace("Bacon on its way...");
+					modelInst.baconMsgTracker = 1;
+				}
 
-				//var soundChannel1: SoundChannel = new SoundChannel(); // You need a sound channel variable. Create it like this
-				var ohInst: Sound = new oh();
+				if (modelInst.soundPlayingBacon == 0) {
+					modelInst.ohInst.play();
 
-				ohInst.play();
+					modelInst.soundPlayingBacon = 1;
+				}
+
+
+			} else {
+
+				modelInst.baconMsgTracker = 0;
+				modelInst.soundPlayingBacon = 0;
 
 			}
+
+
+		}
+
+		function soundComplete(): void {
+			modelInst.soundPlaying = 0;
 
 		}
 
 		function navigateToEndScene(event: MouseEvent): void {
 
+			stage.removeEventListener(Event.ENTER_FRAME,fl_EnterFrameHandler);
 			gotoAndStop(1, "EndScene");
 
 		}
